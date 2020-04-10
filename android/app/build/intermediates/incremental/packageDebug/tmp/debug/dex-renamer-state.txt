@@ -1,0 +1,4 @@
+#Mon Mar 02 00:44:21 SGT 2020
+base.0=D\:\\Repsajanboy\\ReactNative\\RestaurantMenuViewerApp\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex

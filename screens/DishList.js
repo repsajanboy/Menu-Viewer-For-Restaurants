@@ -1,0 +1,1214 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable react-native/no-inline-styles */
+/*This is an Example of SearchBar in React Native*/
+import * as React from 'react';
+// eslint-disable-next-line prettier/prettier
+import {View, StyleSheet, FlatList, Platform, UIManager, Modal, Image  } from 'react-native';
+// eslint-disable-next-line prettier/prettier
+import {Thumbnail, Button, Left, Right, Body, Icon, Text, Container, Header, List, ListItem, CardItem, Separator, H2} from 'native-base';
+import {SearchBar, CheckBox, Card} from 'react-native-elements';
+import {ScrollView} from 'react-native-gesture-handler';
+// eslint-disable-next-line prettier/prettier
+import {Collapse, CollapseHeader, CollapseBody} from 'accordion-collapse-react-native';
+import AllDish from '../data/AllDish';
+
+console.disableYellowBox = true;
+export default class App extends React.PureComponent {
+  static navigationOptions = {
+    tabBarIcon: ({tintColor}) => {
+      return (
+        <Icon name="bars" type="FontAwesome5" style={{color: tintColor}} />
+      );
+    },
+  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: '',
+      item: AllDish,
+      data: AllDish,
+      singleItem: [],
+      dataBackup: AllDish,
+      isLoading: false,
+      page: 1,
+      seed: 1,
+      refreshing: false,
+      status: false,
+      rice: false,
+      sizzler: false,
+      silog: false,
+      pasta: false,
+      pizza: false,
+      milktea: false,
+      sandwiches: false,
+      salad: false,
+      alcohol: false,
+      shake: false,
+      fries: false,
+      appetizer: false,
+      coffee: false,
+      frappe: false,
+      milkshake: false,
+      softdrinks: false,
+      water: false,
+      juice: false,
+      soup: false,
+      modalVisible: false,
+      modal2Visible: false,
+      dish: '',
+    };
+    if (Platform.OS === 'android') {
+      UIManager.setLayoutAnimationEnabledExperimental &&
+        UIManager.setLayoutAnimationEnabledExperimental(true);
+    }
+  }
+  openModal = () => {
+    this.setState({modalVisible: true});
+  };
+  openModal2 = text => {
+    var name = text;
+    var filderData = this.state.data;
+    filderData = this.state.data.filter(item => {
+      if (item.name === name) {
+        return item;
+      }
+    });
+    this.setState({
+      modal2Visible: true,
+      singleItem: filderData,
+    });
+  };
+  navigateRestaurant = text => {
+    var navi = text;
+    this.setState({modal2Visible: false});
+    this.props.navigation.navigate(navi);
+  };
+  closeModal2 = () => {
+    this.setState({modal2Visible: false});
+  };
+  closeModal = () => {
+    this.setState({modalVisible: false});
+  };
+  cancelModal = () => {
+    this.setState({
+      rice: false,
+      pasta: false,
+      pizza: false,
+      drinks: false,
+      milktea: false,
+      sandwiches: false,
+      salad: false,
+      alcohol: false,
+      shake: false,
+      fries: false,
+      appetizer: false,
+      coffee: false,
+      frappe: false,
+      milkshake: false,
+      softdrinks: false,
+      water: false,
+      juice: false,
+      soup: false,
+      item: AllDish,
+    });
+    this.setState({modalVisible: false});
+  };
+  sortAscending = () => {
+    var toSort = this.state.dataBackup;
+    toSort = this.state.dataBackup.sort(function(a,b){return a.price-b.price});
+    this.setState({item: toSort})
+  }
+  sortDescending = () => {
+    var toSort = this.state.dataBackup;
+    toSort = this.state.dataBackup.sort(function(a,b){return b.price-a.price});
+    this.setState({item: toSort})
+  }
+
+  filterList = text => {
+    var newData = this.state.dataBackup;
+    newData = this.state.dataBackup.filter(item => {
+      const itemData = item.name.toLowerCase();
+      const textData = text.toLowerCase();
+      return itemData.indexOf(textData) > -1;
+    });
+    this.setState({
+      query: text,
+      item: newData,
+    });
+  };
+  checkRice = () => {
+    var group = 'ricemeal';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      rice: !this.state.rice,
+    });
+    if (this.state.rice === false) {
+      this.setState({
+        item: filterData,
+        silog: false,
+        sizzler: false,
+        pasta: false,
+        pizza: false,
+        milktea: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkSizzler = () => {
+    var group = 'Sizzlers';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      sizzler: !this.state.sizzler,
+    });
+    if (this.state.sizzler === false) {
+      this.setState({
+        item: filterData,
+        silog: false,
+        rice: false,
+        pasta: false,
+        pizza: false,
+        milktea: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkSilog = () => {
+    var group = 'Silog';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      silog: !this.state.silog,
+    });
+    if (this.state.silog === false) {
+      this.setState({
+        item: filterData,
+        rice: false,
+        sizzler: false,
+        pasta: false,
+        pizza: false,
+        milktea: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkPasta = () => {
+    var group = 'pasta';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      pasta: !this.state.pasta,
+    });
+    if (this.state.pasta === false) {
+      this.setState({
+        item: filterData,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        pizza: false,
+        milktea: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkPizza = () => {
+    var group = 'pizza';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      pizza: !this.state.pizza,
+    });
+    if (this.state.pizza === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        milktea: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkMilktea = () => {
+    var group = 'milktea';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      milktea: !this.state.milktea,
+    });
+    if (this.state.milktea === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        sandwiches: false,
+        salad: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkSalad = () => {
+    var group = 'salad';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      salad: !this.state.salad,
+    });
+    if (this.state.salad === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        sandwiches: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkAlcohol = () => {
+    var group = 'alcohol';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      alocohol: !this.state.alcohol,
+    });
+    if (this.state.alcohol === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        sandwiches: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkShake = () => {
+    var group = 'shake';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      shake: !this.state.shake,
+    });
+    if (this.state.shake === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        sandwiches: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkFries = () => {
+    var group = 'fries';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      fries: !this.state.fries,
+    });
+    if (this.state.fries === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        sandwiches: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkAppetizer = () => {
+    var group = 'appetizer';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      appetizer: !this.state.appetizer,
+    });
+    if (this.state.appetizer === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        sandwiches: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkCoffee = () => {
+    var group = 'coffee';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      coffee: !this.state.coffee,
+    });
+    if (this.state.coffee === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        sandwiches: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkFrappe = () => {
+    var group = 'frappe';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      frappe: !this.state.frappe,
+    });
+    if (this.state.frappe === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        sandwiches: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkMilkshake = () => {
+    var group = 'milkshake';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      milkshake: !this.state.milkshake,
+    });
+    if (this.state.milkshake === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        sandwiches: false,
+        softdrinks: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkSoftdrinks = () => {
+    var group = 'softdrinks';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      softdrinks: !this.state.softdrinks,
+    });
+    if (this.state.softdrinks === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        sandwiches: false,
+        water: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkWater = () => {
+    var group = 'water';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      water: !this.state.water,
+    });
+    if (this.state.water === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        sandwiches: false,
+        juice: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkJuice = () => {
+    var group = 'juice';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      juice: !this.state.juice,
+    });
+    if (this.state.juice === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        sandwiches: false,
+        soup: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  checkSoup = () => {
+    var group = 'juice';
+    var filterData = this.state.dataBackup;
+    filterData = this.state.dataBackup.filter(item => {
+      if (item.filter === group) {
+        return item;
+      }
+    });
+    this.setState({
+      soup: !this.state.soup,
+    });
+    if (this.state.soup === false) {
+      this.setState({
+        item: filterData,
+        pasta: false,
+        pizza: false,
+        drinks: false,
+        rice: false,
+        silog: false,
+        sizzler: false,
+        salad: false,
+        milktea: false,
+        alcohol: false,
+        shake: false,
+        fries: false,
+        appetizer: false,
+        coffee: false,
+        frappe: false,
+        milkshake: false,
+        softdrinks: false,
+        water: false,
+        sandwiches: false,
+        juice: false,
+      });
+    } else {
+      this.setState({
+        item: AllDish,
+      });
+    }
+  };
+  renderItem(item) {
+    return (
+      <View>
+        <List style={{backgroundColor: 'white'}}>
+          <ListItem
+            thumbnail
+            style={{marginBottom: 5}}
+            button
+            onPress={() => this.openModal2(item.name)}>
+            <Left>
+              <Thumbnail square source={item.image} />
+            </Left>
+            <Body>
+              <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+              <Text>Php {item.price}</Text>
+            </Body>
+            <Right>
+              <Button transparent>
+                <Icon name="angle-right" type="FontAwesome" />
+              </Button>
+            </Right>
+          </ListItem>
+        </List>
+      </View>
+    );
+  }
+  render() {
+    return (
+      //ListView to show with textinput used as search bar
+      <Container style={styles.viewStyle}>
+        <Header>
+          <View
+            style={{flex: 1, flexDirection: 'row', backgroundColor: '#3f48cc'}}>
+            <View style={{flex: 4}}>
+              <SearchBar
+                round
+                autoFocus={false}
+                containerStyle={{
+                  backgroundColor: 'transparent',
+                  borderWidth: 0,
+                  borderBottomColor: 'transparent',
+                  borderTopColor: 'transparent',
+                }}
+                inputContainerStyle={{backgroundColor: '#ffffff'}}
+                searchIcon={{size: 24, color: 'black'}}
+                inputStyle={{color: 'black'}}
+                placeholder="Search dishes here..."
+                placeholderTextColor="black"
+                onChangeText={text => {
+                  this.filterList(text);
+                }}
+                onPressCancel={() => {
+                  this.filterList('');
+                }}
+                value={this.state.query}
+              />
+            </View>
+            <View>
+              <Button
+                style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}
+                transparent
+                onPress={this.openModal}>
+                <Text style={{color: 'white'}}>Filter</Text>
+              </Button>
+            </View>
+          </View>
+        </Header>
+        <View style={{ flexDirection: 'row', backgroundColor: '#3f48cc'}}>
+          <Button style={{flex:1, backgroundColor: '#3f48cc'}} onPress={this.sortAscending}><Icon name="sort-amount-asc" type="FontAwesome" /><Text style={{flex: 2}}>Sort Price ascending</Text></Button>
+          <Button style={{flex:1, backgroundColor: '#3f48cc'}} onPress={this.sortDescending}><Icon name="sort-amount-desc" type="FontAwesome" /><Text style={{flex: 2}}>Sort Price descending</Text></Button>
+          {/* <Button style={{flex:1, backgroundColor: '#3f48cc'}} onPress={this.sortAlphabetical}><Icon name="sort" type="MaterialCommunityIcons" /><Text style={{flex: 2}}>Sort Alphabetical</Text></Button> */}
+        </View>
+        <View style={{flex: 1}}>
+          <Modal
+            visible={this.state.modalVisible}
+            animationType={'fade'}
+            onRequestClose={() => this.closeModal}>
+            <View style={{marginLeft: 25, marginTop: 20}}>
+              <Text style={{fontSize: 24}}>Categories :</Text>
+            </View>
+            <ScrollView>
+            <View
+              style={{
+                flexDirection: 'column',
+                flexWrap: 'wrap',
+                justifyContent: 'center',
+                alignItems: 'stretch',
+                alignContent: 'stretch',
+                alignSelf: 'stretch',
+              }}>
+                <Collapse>
+                <CollapseHeader style={{marginRight: 10, marginLeft: 10, marginTop: 5}}>
+                  <Separator bordered>
+                    <CardItem style={{backgroundColor : '#f0eff5'}}>
+                      <Left>
+                        <H2>Appetizer</H2>
+                      </Left>
+                      <Right>
+                        <Icon name="angle-down" type="FontAwesome5" style={{color : 'black'}} />
+                      </Right>
+                    </CardItem>
+                  </Separator>
+                </CollapseHeader>
+                <CollapseBody>
+                  <CheckBox
+                    title="Appetizers"
+                    checked={this.state.appetizer}
+                    onPress={this.checkAppetizer}
+                  />
+                  <CheckBox
+                    title="Soups"
+                    checked={this.state.soup}
+                    onPress={this.checkSoup}
+                  />
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{marginRight: 10, marginLeft: 10, marginTop: 5}}>
+                  <Separator bordered>
+                    <CardItem style={{backgroundColor : '#f0eff5'}}>
+                      <Left>
+                        <H2>Main Dish</H2>
+                      </Left>
+                      <Right>
+                        <Icon name="angle-down" type="FontAwesome5" style={{color : 'black'}} />
+                      </Right>
+                    </CardItem>
+                  </Separator>
+                </CollapseHeader>
+                <CollapseBody>
+                  <CheckBox
+                    title="Rice Meals"
+                    checked={this.state.rice}
+                    onPress={this.checkRice}
+                  />
+                  <CheckBox
+                    title="Silog Meals"
+                    checked={this.state.silog}
+                    onPress={this.checkSilog}
+                  />
+                  <CheckBox
+                    title="Sizzlers Meals"
+                    checked={this.state.sizzler}
+                    onPress={this.checkSizzler}
+                  />
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{marginRight: 10, marginLeft: 10, marginTop: 5}}>
+                  <Separator bordered>
+                    <CardItem style={{backgroundColor : '#f0eff5'}}>
+                      <Left>
+                        <H2>Snacks</H2>
+                      </Left>
+                      <Right>
+                        <Icon name="angle-down" type="FontAwesome5" style={{color : 'black'}} />
+                      </Right>
+                    </CardItem>
+                  </Separator>
+                </CollapseHeader>
+                <CollapseBody>
+                  <CheckBox
+                    title="Pasta/Noodles"
+                    checked={this.state.pasta}
+                    onPress={this.checkPasta}
+                  />
+                  <CheckBox
+                    title="Pizza"
+                    checked={this.state.pizza}
+                    onPress={this.checkPizza}
+                  />
+                  <CheckBox
+                    title="Sandwiches/Burger"
+                    checked={this.state.sandwiches}
+                    onPress={this.checkSandwiches}
+                  />
+                  <CheckBox
+                    title="Fries"
+                    checked={this.state.fries}
+                    onPress={this.checkFries}
+                  />
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{marginRight: 10, marginLeft: 10, marginTop: 5}}>
+                  <Separator bordered>
+                    <CardItem style={{backgroundColor : '#f0eff5'}}>
+                      <Left>
+                        <H2>Dessert</H2>
+                      </Left>
+                      <Right>
+                        <Icon name="angle-down" type="FontAwesome5" style={{color : 'black'}} />
+                      </Right>
+                    </CardItem>
+                  </Separator>
+                </CollapseHeader>
+                <CollapseBody>
+                  <CheckBox
+                    title="Salad/Dessert"
+                    checked={this.state.salad}
+                    onPress={this.checkSalad}
+                  />
+                </CollapseBody>
+              </Collapse>
+              <Collapse>
+                <CollapseHeader style={{marginRight: 10, marginLeft: 10, marginTop: 5}}>
+                  <Separator bordered>
+                    <CardItem style={{backgroundColor : '#f0eff5'}}>
+                      <Left>
+                        <H2>Drinks</H2>
+                      </Left>
+                      <Right>
+                        <Icon name="angle-down" type="FontAwesome5" style={{color : 'black'}} />
+                      </Right>
+                    </CardItem>
+                  </Separator>
+                </CollapseHeader>
+                <CollapseBody>
+                <CheckBox
+                    title="Alcoholic Drinks"
+                    checked={this.state.alcohol}
+                    onPress={this.checkAlcohol}
+                  />
+                  <CheckBox
+                    title="Coffee"
+                    checked={this.state.coffee}
+                    onPress={this.checkCoffee}
+                  />
+                  <CheckBox
+                    title="Frappe"
+                    checked={this.state.frappe}
+                    onPress={this.checkFrappe}
+                  />
+                  <CheckBox
+                    title="Juice"
+                    checked={this.state.juice}
+                    onPress={this.checkJuice}
+                  />
+                  <CheckBox
+                    title="Milkshake"
+                    checked={this.state.milkshake}
+                    onPress={this.checkMilkshake}
+                  />
+                  <CheckBox
+                    title="Milktea"
+                    checked={this.state.milktea}
+                    onPress={this.checkMilkshake}
+                  />
+                  <CheckBox
+                    title="Shake"
+                    checked={this.state.shake}
+                    onPress={this.checkShake}
+                  />
+                  <CheckBox
+                    title="Softdrinks"
+                    checked={this.state.softdrinks}
+                    onPress={this.checkSoftdrinks}
+                  />
+                  <CheckBox
+                    title="Water"
+                    checked={this.state.water}
+                    onPress={this.checkWater}
+                  />
+                </CollapseBody>
+              </Collapse>
+            </View>
+            <View
+              style={{
+                margin: 20,
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+              }}>
+              <Button danger onPress={this.cancelModal}>
+                <Text>Cancel</Text>
+              </Button>
+              <Button onPress={this.closeModal}>
+                <Text>Apply Filter</Text>
+              </Button>
+            </View>
+            </ScrollView>
+          </Modal>
+        </View>
+        <View style={{flex: 1}}>
+          <Modal
+            visible={this.state.modal2Visible}
+            animationType={'fade'}
+            onRequestClose={() => this.closeModal}>
+            <FlatList
+              data={this.state.singleItem}
+              //Item Separator View
+              enableEmptySections={true}
+              style={{marginTop: 10, backgroundColor: '#dfdfdf'}}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({item}) => (
+                <Card>
+                  <CardItem>
+                    <Left style={{flex: 1, flexDirection: 'column'}}>
+                      <Text style={{fontWeight: 'bold'}}>{item.name}</Text>
+                      <Text>Php {item.price}</Text>
+                    </Left>
+                  </CardItem>
+                  <CardItem>
+                    <Image
+                      source={item.image}
+                      style={{height: 350, width: null, flex: 1}}
+                    />
+                  </CardItem>
+                  <CardItem>
+                    <Left style={{flex: 1, flexDirection: 'row'}}>
+                      <Text>Restaurant : </Text>
+                      <Text style={{fontWeight: 'bold'}}>{item.restau}</Text>
+                    </Left>
+                  </CardItem>
+                  <CardItem>
+                    <Left style={{flex: 2}}>
+                      <Button
+                        transparent
+                        onPress={() => this.navigateRestaurant(item.navi)}>
+                        <Text>Go to Restaurant</Text>
+                        <Icon name="sign-in" type="FontAwesome" />
+                      </Button>
+                    </Left>
+                    <Right style={{flex: 1}}>
+                      <Button transparent onPress={this.closeModal2}>
+                        <Text>To List</Text>
+                        <Icon name="reply" type="FontAwesome" />
+                      </Button>
+                    </Right>
+                  </CardItem>
+                </Card>
+              )}
+              // Single Comes here which will be repeatative for the FlatListItems
+            />
+          </Modal>
+        </View>
+        <FlatList
+          data={this.state.item.sort((a, b) => a.name.localeCompare(b.name))}
+          //Item Separator View
+          enableEmptySections={true}
+          style={{marginTop: 10, padding: 10, backgroundColor: '#dfdfdf'}}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item}) => this.renderItem(item)}
+          // Single Comes here which will be repeatative for the FlatListItems
+        />
+      </Container>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  viewStyle: {
+    justifyContent: 'center',
+    flex: 1,
+    backgroundColor: 'white',
+    marginTop: Platform.OS === 'ios' ? 30 : 0,
+  },
+  cardImage: {
+    height: 200,
+    width: null,
+    flex: 1,
+  },
+});
